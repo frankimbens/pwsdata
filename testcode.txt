@@ -1,0 +1,39 @@
+FirstMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
+SecondMatrix = Matrix(0, 1, 0, 0, 0, 1, 1, 0, 0)
+ThirdMatrix = Matrix(0, 0, 1, 1, 0, 0, 0, 1, 0)
+FirstVector = Vector(1, 0, -1)
+
+FirstMatrix.printMatrix()
+SecondMatrix.printMatrix()
+ThirdMatrix.printMatrix()
+FirstVector.printVector()
+
+
+#FirstMatrix.MultiplyMatrix(SecondMatrix)
+#FirstMatrix.printMatrix()
+#FirstMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+#FirstMatrix.MultiplyMatrix(ThirdMatrix)
+#FirstMatrix.printMatrix()
+#FirstMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+#SecondMatrix.MultiplyMatrix(ThirdMatrix)
+#SecondMatrix.printMatrix()
+#SecondMatrix = Matrix(0, 1, 0, 0, 0, 1, 1, 0, 0)
+
+#ThirdMatrix.MultiplyMatrix(SecondMatrix)
+#ThirdMatrix.printMatrix()
+#ThirdMatrix = Matrix(0, 0, 1, 1, 0, 0, 0, 1, 0)
+
+
+FirstMatrix.MultiplyVector(FirstVector)
+FirstVector.printVector()
+FirstVector = Vector(1, 0, -1)
+
+SecondMatrix.MultiplyVector(FirstVector)
+FirstVector.printVector()
+FirstVector = Vector(1, 0, -1)
+
+ThirdMatrix.MultiplyVector(FirstVector)
+FirstVector.printVector()
+FirstVector = Vector(1, 0, -1)
