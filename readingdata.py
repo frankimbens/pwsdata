@@ -30,12 +30,12 @@ gYsavelist = []
 gZsavelist = []
 
 startOfGraph = 0 # start time in milliseconds
-lengthOfGraph = 50000 # length of graph in milliseconds
+lengthOfGraph = 100000 # length of graph in milliseconds
 msPerPixel = lengthOfGraph/WindowSizeX
 groundContactTime = 30 # expected ground time in milliseconds, used to calibrate gyroscope
 groundAccellerationMargin = 0.30 #margin for calibrating
 
-f = open('data_20150629142500_168.bin', 'rb')
+f = open('data_20150830141722_169.bin', 'rb')
 
 class Vector(object):
 	def __init__ (self, X, Y, Z):
