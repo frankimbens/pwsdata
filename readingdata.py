@@ -35,7 +35,7 @@ msPerPixel = lengthOfGraph/WindowSizeX
 groundContactTime = 30 # expected ground time in milliseconds, used to calibrate gyroscope
 groundAccellerationMargin = 0.30 #margin for calibrating
 
-f = open('data_20150830141722_169.bin', 'rb')
+f = open('data_20150830222322_168.bin', 'rb')
 
 class Vector(object):
 	def __init__ (self, X, Y, Z):
