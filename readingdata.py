@@ -29,8 +29,8 @@ gXsavelist = []
 gYsavelist = []
 gZsavelist = []
 
-startOfGraph = 56000 # start time in milliseconds
-lengthOfGraph = 12500 # length of graph in milliseconds
+startOfGraph = 0 # start time in milliseconds
+lengthOfGraph = 300000 # length of graph in milliseconds
 msPerPixel = lengthOfGraph/WindowSizeX
 groundContactTime = 30 # expected ground time in milliseconds, used to calibrate gyroscope
 groundAccellerationMargin = 0.30 #margin for calibrating
@@ -179,7 +179,7 @@ for i in range(0,(len(gXsavelist))):
 
 pygame.display.update()	
 
-while true:
+while True:
 	for event in pygame.event.get():
 		if event.type == QUIT:
 			pygame.quit()
