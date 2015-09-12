@@ -30,7 +30,7 @@ gYsavelist = []
 gZsavelist = []
 
 startOfGraph = 0 # start time in milliseconds
-lengthOfGraph = 300000 # length of graph in milliseconds
+lengthOfGraph = 3000000 # length of graph in milliseconds
 msPerPixel = lengthOfGraph/WindowSizeX
 groundContactTime = 30 # expected ground time in milliseconds, used to calibrate gyroscope
 groundAccellerationMargin = 0.30 #margin for calibrating
