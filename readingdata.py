@@ -25,6 +25,10 @@ Xsavelist = []
 Ysavelist = []
 Zsavelist = []
 
+aXsavelist = []
+aYsavelist = []
+aZsavelist = []
+
 gXsavelist = []
 gYsavelist = []
 gZsavelist = []
@@ -35,7 +39,7 @@ msPerPixel = lengthOfGraph/WindowSizeX
 groundContactTime = 30 # expected ground time in milliseconds, used to calibrate gyroscope
 groundAccellerationMargin = 0.30 #margin for calibrating
 
-f = open('data_20150830222322_168.bin', 'rb')
+f = open('data_20150913142909_169.bin', 'rb')
 
 class Vector(object):
 	def __init__ (self, X, Y, Z):
@@ -130,6 +134,7 @@ MainMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
 AddedXMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
 AddedYMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
 AddedZMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
+AccelerationVector = Vector(0, 0, 0)
 
 groundedTime = 0
 for i in range(0,(len(gXsavelist))):
@@ -146,6 +151,16 @@ for i in range(0,(len(gXsavelist))):
 	MainMatrix.MultiplyMatrix(AddedXMatrix)
 	MainMatrix.MultiplyMatrix(AddedYMatrix)
 	MainMatrix.MultiplyMatrix(AddedZMatrix)
+	
+#	AccelerationVector.vecX = Xsavelist[i]
+#	AccelerationVector.vecY = Ysavelist[i]
+#	AccelerationVector.vecZ = Zsavelist[i]
+	
+#	MainMatrix.MultiplyVector(AccelerationVector)
+	
+#	aXsavelist.append(AccelerationVector.vecX)
+#	aYsavelist.append(AccelerationVector.vecY)
+#	aZsavelist.append(AccelerationVector.vecZ)
 
 	pygame.draw.rect(DISPLAYSURF, Cyan, (i/msPerPixel, math.ceil((-Xsavelist[i]+16)*10), 2, 2))
 	pygame.draw.rect(DISPLAYSURF, Magenta, (i/msPerPixel, math.ceil((-Ysavelist[i]+16)*10), 2, 2))
@@ -154,6 +169,8 @@ for i in range(0,(len(gXsavelist))):
 	pygame.draw.rect(DISPLAYSURF, Red, (i/msPerPixel, math.ceil((-MainMatrix.mXX)*160 + 160), 3, 3))
 	pygame.draw.rect(DISPLAYSURF, Green, (i/msPerPixel, math.ceil((-MainMatrix.mYX)*160 + 160), 3, 3))
 	pygame.draw.rect(DISPLAYSURF, Blue, (i/msPerPixel, math.ceil((-MainMatrix.mZX)*160 + 160), 3, 3))
+
+			
 #	print(i, MainMatrix.mXX, MainMatrix.mYX, MainMatrix.mZX)
 	
 #for i in range(0, stepamount):
