@@ -15,31 +15,35 @@ Blue = (0, 0, 255)
 Cyan = (0, 255, 255)
 Magenta = (255, 0, 255)
 Yellow = (255, 255, 0)
+Black = (0, 0, 0)
 
 
 stepstart = []
 stepamount = 10
 steplenav = 0
 
-Xsavelist = []
-Ysavelist = []
-Zsavelist = []
+XsavelistFront = []
+YsavelistFront = []
+ZsavelistFront = []
 
-aXsavelist = []
-aYsavelist = []
-aZsavelist = []
+aXsavelistFront = []
+aYsavelistFront = []
+aZsavelistFront = []
 
-gXsavelist = []
-gYsavelist = []
-gZsavelist = []
+gXsavelistFront = []
+gYsavelistFront = []
+gZsavelistFront = []
 
 startOfGraph = 0 # start time in milliseconds
-lengthOfGraph = 3000000 # length of graph in milliseconds
+lengthOfGraph = 50000 # length of graph in milliseconds
 msPerPixel = lengthOfGraph/WindowSizeX
+zoomLevel = 1
+startDrawPos = 0
 groundContactTime = 30 # expected ground time in milliseconds, used to calibrate gyroscope
 groundAccellerationMargin = 0.30 #margin for calibrating
 
-f = open('data_20150913142909_169.bin', 'rb')
+SensorFront = open('data_20150913142909_169.bin', 'rb')
+SensorBack = open('data_20150913142909_169.bin', 'rb')
 
 class Vector(object):
 	def __init__ (self, X, Y, Z):
@@ -111,19 +115,21 @@ class Matrix(object):
 		print('(', self.mZX, ',',  self.mZY, ',', self.mZZ, ')', '\n')
 		
 for i in range (0,startOfGraph):
-	(t, ax, ay, az, temp, gx, gy, gz, dummy) = unpack('qfffffffi', f.read (40))
+	(t, ax, ay, az, temp, gx, gy, gz, dummy) = unpack('qfffffffi', SensorFront.read (40))
+	(t, ax, ay, az, temp, gx, gy, gz, dummy) = unpack('qfffffffi', SensorBack.read (40))
+	print("Start cut off")
 for i in range (0,lengthOfGraph):
 	try:
-		(t, ax, ay, az, temp, gx, gy, gz, dummy) = unpack('qfffffffi', f.read (40))
+		(t, ax, ay, az, temp, gx, gy, gz, dummy) = unpack('qfffffffi', SensorFront.read (40))
 	#	print (i, t, ax, ay, az, temp, gx, gy, gz, dummy, '\n')
 		if ay > 7 and (len(stepstart) == 0 or i > stepstart[-1]+400):
 			stepstart.append(i)
-		Xsavelist.append(ax)
-		Ysavelist.append(ay)
-		Zsavelist.append(az)	
-		gXsavelist.append(gx/16*2*math.pi/1000)
-		gYsavelist.append(gy/16*2*math.pi/1000)
-		gZsavelist.append(gz/16*2*math.pi/1000)
+		XsavelistFront.append(ax)
+		YsavelistFront.append(ay)
+		ZsavelistFront.append(az)	
+		gXsavelistFront.append(gx/16*2*math.pi/1000)
+		gYsavelistFront.append(gy/16*2*math.pi/1000)
+		gZsavelistFront.append(gz/16*2*math.pi/1000)
 	except error:
 		print("no more to unpack", i)
 		msPerPixel = i/WindowSizeX
@@ -136,41 +142,48 @@ AddedYMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
 AddedZMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
 AccelerationVector = Vector(0, 0, 0)
 
+MatrixList = [Matrix(0, 0, 0, 0, 0, 0, 0, 0, 0) for i in range(lengthOfGraph)]
+
 groundedTime = 0
-for i in range(0,(len(gXsavelist))):
-	if Xsavelist[i] > -groundAccellerationMargin and Xsavelist[i] < groundAccellerationMargin and Zsavelist[i] > -groundAccellerationMargin and Zsavelist[i] < groundAccellerationMargin:
+for i in range(0,(len(gXsavelistFront))):
+	if XsavelistFront[i] > -groundAccellerationMargin and XsavelistFront[i] < groundAccellerationMargin and ZsavelistFront[i] > -groundAccellerationMargin and ZsavelistFront[i] < groundAccellerationMargin:
 		groundedTime = groundedTime + 1
 	else:
 		groundedTime = 0
 	if groundedTime >= groundContactTime:
 		MainMatrix.remakeall(1, 0, 0, 0, 1, 0, 0, 0, 1)
-	AddedXMatrix.remakeall(1, 0, 0, 0, math.cos(gXsavelist[i]), -(math.sin(gXsavelist[i])), 0, math.sin(gXsavelist[i]), math.cos(gXsavelist[i]))
-	AddedYMatrix.remakeall(math.cos(gYsavelist[i]), 0, math.sin(gYsavelist[i]), 0, 1, 0, -(math.sin(gYsavelist[i])), 0, math.cos(gYsavelist[i]))
-	AddedZMatrix.remakeall(math.cos(gZsavelist[i]), -(math.sin(gZsavelist[i])), 0, math.sin(gZsavelist[i]), math.cos(gZsavelist[i]), 0, 0, 0, 1)
+	AddedXMatrix.remakeall(1, 0, 0, 0, math.cos(gXsavelistFront[i]), (math.sin(gXsavelistFront[i])), 0, -(math.sin(gXsavelistFront[i])), math.cos(gXsavelistFront[i]))
+	AddedYMatrix.remakeall(math.cos(gYsavelistFront[i]), 0, -(math.sin(gYsavelistFront[i])), 0, 1, 0, (math.sin(gYsavelistFront[i])), 0, math.cos(gYsavelistFront[i]))
+	AddedZMatrix.remakeall(math.cos(gZsavelistFront[i]), (math.sin(gZsavelistFront[i])), 0, -(math.sin(gZsavelistFront[i])), math.cos(gZsavelistFront[i]), 0, 0, 0, 1)
 
 	MainMatrix.MultiplyMatrix(AddedXMatrix)
 	MainMatrix.MultiplyMatrix(AddedYMatrix)
 	MainMatrix.MultiplyMatrix(AddedZMatrix)
 	
-#	AccelerationVector.vecX = Xsavelist[i]
-#	AccelerationVector.vecY = Ysavelist[i]
-#	AccelerationVector.vecZ = Zsavelist[i]
+	
+	
+#	AccelerationVector.vecX = XsavelistFront[i]
+#	AccelerationVector.vecY = YsavelistFront[i]
+#	AccelerationVector.vecZ = ZsavelistFront[i]
 	
 #	MainMatrix.MultiplyVector(AccelerationVector)
 	
-#	aXsavelist.append(AccelerationVector.vecX)
-#	aYsavelist.append(AccelerationVector.vecY)
-#	aZsavelist.append(AccelerationVector.vecZ)
+#	aXsavelistFront.append(AccelerationVector.vecX)
+#	aYsavelistFront.append(AccelerationVector.vecY)
+#	aZsavelistFront.append(AccelerationVector.vecZ)
 
-	pygame.draw.rect(DISPLAYSURF, Cyan, (i/msPerPixel, math.ceil((-Xsavelist[i]+16)*10), 2, 2))
-	pygame.draw.rect(DISPLAYSURF, Magenta, (i/msPerPixel, math.ceil((-Ysavelist[i]+16)*10), 2, 2))
-	pygame.draw.rect(DISPLAYSURF, Yellow, (i/msPerPixel, math.ceil((-Zsavelist[i]+16)*10), 2, 2))
+	MatrixList[i].mXX = MainMatrix.mXX
+	MatrixList[i].mXY = MainMatrix.mXY
+	MatrixList[i].mXZ = MainMatrix.mXZ
 
-	pygame.draw.rect(DISPLAYSURF, Red, (i/msPerPixel, math.ceil((-MainMatrix.mXX)*160 + 160), 3, 3))
-	pygame.draw.rect(DISPLAYSURF, Green, (i/msPerPixel, math.ceil((-MainMatrix.mYX)*160 + 160), 3, 3))
-	pygame.draw.rect(DISPLAYSURF, Blue, (i/msPerPixel, math.ceil((-MainMatrix.mZX)*160 + 160), 3, 3))
+	MatrixList[i].mYX = MainMatrix.mYX
+	MatrixList[i].mYY = MainMatrix.mYY
+	MatrixList[i].mYZ = MainMatrix.mYZ
 
-			
+	MatrixList[i].mZX = MainMatrix.mZX
+	MatrixList[i].mZY = MainMatrix.mZY
+	MatrixList[i].mZZ = MainMatrix.mZZ
+	
 #	print(i, MainMatrix.mXX, MainMatrix.mYX, MainMatrix.mZX)
 	
 #for i in range(0, stepamount):
@@ -184,9 +197,9 @@ for i in range(0,(len(gXsavelist))):
 #	Yaverage = 0
 #	Zaverage = 0
 #	for j in range (0, stepamount):
-#		Xaverage = Xaverage + Xsavelist[stepstart[j]+i]
-#		Yaverage = Yaverage + Ysavelist[stepstart[j]+i]
-#		Zaverage = Zaverage + Zsavelist[stepstart[j]+i]
+#		Xaverage = Xaverage + XsavelistFront[stepstart[j]+i]
+#		Yaverage = Yaverage + YsavelistFront[stepstart[j]+i]
+#		Zaverage = Zaverage + ZsavelistFront[stepstart[j]+i]
 #	Xaverage = (Xaverage/stepamount)
 #	Yaverage = (Yaverage/stepamount)
 #	Zaverage = (Zaverage/stepamount)
@@ -194,10 +207,47 @@ for i in range(0,(len(gXsavelist))):
 #	pygame.draw.rect(DISPLAYSURF, Green, (i, math.ceil((-Yaverage+16)*10) , 3, 3))	
 #	pygame.draw.rect(DISPLAYSURF, Blue, (i, math.ceil((-Zaverage+16)*10) , 3, 3))	
 
-pygame.display.update()	
+Grabbed = False
 
 while True:
 	for event in pygame.event.get():
 		if event.type == QUIT:
 			pygame.quit()
 			sys.exit()
+
+	keys=pygame.key.get_pressed()
+	Mouse1, Mouse2, Mouse3 = pygame.mouse.get_pressed()
+	MouseX, MouseY = pygame.mouse.get_pos()
+	
+	if Grabbed == False:
+		MouseXOld = MouseX
+	
+	if keys[K_LEFT]:
+		zoomLevel = zoomLevel/2
+	if keys[K_RIGHT]:
+		zoomLevel = zoomLevel*2
+	if Mouse1 == 1:
+		Grabbed = True
+		startDrawPos = startDrawPos - MouseXOld + MouseX
+		MouseXOld = MouseX
+	else:
+		Grabbed = False
+	
+	pygame.draw.rect(DISPLAYSURF, Black, (0, 0, WindowSizeX, WindowSizeY))
+	pixelPerMs = lengthOfGraph/WindowSizeX*zoomLevel
+	reDraw = 0
+	for i in range(0,(len(gXsavelistFront))):
+		reDraw = reDraw + pixelPerMs
+		if math.ceil(i/msPerPixel*zoomLevel) + startDrawPos > 0 and math.ceil(i/msPerPixel*zoomLevel) + startDrawPos < WindowSizeX and reDraw > 1:
+			pygame.draw.rect(DISPLAYSURF, Cyan, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((-XsavelistFront[i]+16)*10), 2, 2))
+			pygame.draw.rect(DISPLAYSURF, Magenta, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((-YsavelistFront[i]+16)*10), 2, 2))
+			pygame.draw.rect(DISPLAYSURF, Yellow, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((-ZsavelistFront[i]+16)*10), 2, 2))
+	
+			pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((-MatrixList[i].mXX)*160 + 160), 3, 3))
+			pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((MatrixList[i].mYX)*160 + 160), 3, 3))
+			pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((MatrixList[i].mZX)*160 + 160), 3, 3))
+			reDraw = 0
+		
+			
+
+	pygame.display.update()	
