@@ -16,9 +16,10 @@ Cyan = (0, 255, 255)
 Magenta = (255, 0, 255)
 Yellow = (255, 255, 0)
 Black = (0, 0, 0)
+White = (255, 255, 255)
 
-
-stepstart = []
+FrontLanding = []
+BackLanding = []
 stepamount = 10
 steplenav = 0
 
@@ -47,7 +48,7 @@ gYsavelistBack = []
 gZsavelistBack = []
 
 startOfGraph = 0 # start time in milliseconds
-lengthOfGraph = 40000 # length of graph in milliseconds
+lengthOfGraph = 100000 # length of graph in milliseconds
 msPerPixel = lengthOfGraph/WindowSizeX
 zoomLevel = 1
 startDrawPos = 0
@@ -135,8 +136,10 @@ for i in range (0,lengthOfGraph):
 		(t, ax, ay, az, temp, gx, gy, gz, dummy) = unpack('qfffffffi', SensorFront.read (40))
 		(tb, axb, ayb, azb, tempb, gxb, gyb, gzb, dummy) = unpack('qfffffffi', SensorBack.read (40))
 	#	print (i, t, ax, ay, az, temp, gx, gy, gz, dummy, '\n')
-		if ay > 7 and (len(stepstart) == 0 or i > stepstart[-1]+400):
-			stepstart.append(i)
+		if ayb > 7 and (len(BackLanding) == 0 or i > BackLanding[-1]+400):
+			BackLanding.append(i)
+		if ay > 7 and (len(FrontLanding) == 0 or i > FrontLanding[-1]+400):
+			FrontLanding.append(i)
 		XsavelistFront.append(ax)
 		YsavelistFront.append(ay)
 		ZsavelistFront.append(az)	
@@ -280,24 +283,31 @@ while True:
 		Grabbed = False
 	
 	pygame.draw.rect(DISPLAYSURF, Black, (0, 0, WindowSizeX, WindowSizeY))
-	pixelPerMs = lengthOfGraph/WindowSizeX
+	pixelPerPixel = WindowSizeX / len(FrontLanding)
+	pixelPerMS = 1 / msPerPixel
 	reDraw = 0
-	for i in range(0,(len(gXsavelistFront))):
-		reDraw = reDraw + pixelPerMs*zoomLevel
-		if math.ceil(i/msPerPixel*zoomLevel) + startDrawPos > 0 and math.ceil(i/msPerPixel*zoomLevel) + startDrawPos < WindowSizeX and reDraw >= 1:
-			pygame.draw.rect(DISPLAYSURF, Cyan, (math.ceil(i/pixelPerMs*zoomLevel) + startDrawPos, math.ceil((-XsavelistFront[i]+16)*20), 2, 2))
-			pygame.draw.rect(DISPLAYSURF, Magenta, (math.ceil(i/pixelPerMs*zoomLevel) + startDrawPos, math.ceil((-YsavelistFront[i]+16)*20), 2, 2))
-			pygame.draw.rect(DISPLAYSURF, Yellow, (math.ceil(i/pixelPerMs*zoomLevel) + startDrawPos, math.ceil((-ZsavelistFront[i]+16)*20), 2, 2))
+#	for i in range(0,(len(gXsavelistFront))):
+	for i in range(0,(len(FrontLanding))):
+		reDraw = reDraw + pixelPerPixel*zoomLevel
+		if math.ceil(i/pixelPerPixel*zoomLevel) + startDrawPos > 0 and math.ceil(i/pixelPerPixel*zoomLevel) + startDrawPos < WindowSizeX and reDraw >= 1:
+			if i > 0:
+				pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(160 - ((FrontLanding[i] - FrontLanding[i-1])/6.0)), 5, 5))
+			if i < len(BackLanding):
+				pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(160 - ((BackLanding[i] - FrontLanding[i]))), 5, 5))
+			pygame.draw.line(DISPLAYSURF, White, (1, WindowSizeY/2), (WindowSizeX, WindowSizeY/2), 2)
+#			pygame.draw.rect(DISPLAYSURF, Cyan, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-XsavelistFront[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Magenta, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-YsavelistFront[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Yellow, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-ZsavelistFront[i]+16)*20), 2, 2))
 
-			pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(i/pixelPerMs*zoomLevel) + startDrawPos, math.ceil((-XsavelistBack[i]+16)*20), 2, 2))
-			pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(i/pixelPerMs*zoomLevel) + startDrawPos, math.ceil((-YsavelistBack[i]+16)*20), 2, 2))
-			pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(i/pixelPerMs*zoomLevel) + startDrawPos, math.ceil((-ZsavelistBack[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-XsavelistBack[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-YsavelistBack[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-ZsavelistBack[i]+16)*20), 2, 2))
 	
 #			pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((-MatrixListFront[i].mXX)*320 + 320), 3, 3))
 #			pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((MatrixListFront[i].mYX)*320 + 320), 3, 3))
 #			pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((MatrixListFront[i].mZX)*320 + 320), 3, 3))
 			reDraw = 0
-		
+			print (math.ceil(160 - ((BackLanding[i] - FrontLanding[i]))))
 			
 
 	pygame.display.update()	
