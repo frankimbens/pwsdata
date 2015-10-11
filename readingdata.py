@@ -153,7 +153,7 @@ for i in range (0,lengthOfGraph): # reading data
 			gXsavelistFront.append(gx/16*2*math.pi/1000)
 			gYsavelistFront.append(gy/16*2*math.pi/1000)
 			gZsavelistFront.append(gz/16*2*math.pi/1000)
-			timesavelistFront.append(t)
+			timesavelistFront.append(math.ceil(t/1000))
 			if ay > 7 and (len(FrontLanding) == 0 or t/1000 > FrontLanding[-1]+400): #check landing
 				FrontLanding.append(math.ceil(t/1000))
 				FrontLandingI.append(i)
@@ -167,7 +167,7 @@ for i in range (0,lengthOfGraph): # reading data
 			gXsavelistBack.append(gxb/16*2*math.pi/1000)
 			gYsavelistBack.append(gyb/16*2*math.pi/1000)
 			gZsavelistBack.append(gzb/16*2*math.pi/1000)
-			timesavelistBack.append(tb)
+			timesavelistBack.append(math.ceil(tb/1000))
 #			if lookForBack == True and ayb > 7 and (len(BackLanding) == 0 or t/1000 > BackLanding[-1]+400):
 #				BackLanding.append(math.ceil(tb/1000))
 #				BackLandingI.append(i)
@@ -196,24 +196,21 @@ for i in range (0, len(FrontLandingI)):
 		if ka > 0 and ka < len(YsavelistBack):
 			if YsavelistBack[ka] > 7:
 				BackLandingI[i] = (ka)
-				BackLanding[i] = (math.ceil(timesavelistBack[ka]/1000))
-				print(timesavelistFront[ka]/1000 - timesavelistBack[ka]/1000)
+				BackLanding[i] = (math.ceil(timesavelistBack[ka]))
 				break
 		if kb > 0 and kb < len(YsavelistBack):
 			if YsavelistBack[kb] > 7:
 				BackLandingI[i] = (kb)
-				BackLanding[i] = (math.ceil(timesavelistBack[kb]/1000))
-				print(timesavelistFront[kb]/1000 - timesavelistBack[kb]/1000)
-#				print(FrontLanding[i] - BackLanding[i])
+				BackLanding[i] = (math.ceil(timesavelistBack[kb]))
 				break
 """
 
 j = 0
 for i in range (0, len(YsavelistBack)):
-	if math.ceil(timesavelistBack[i]/1000) > FrontLanding[j]+200 and j + 1 < len(FrontLanding):
+	if math.ceil(timesavelistBack[i]) > FrontLanding[j]+200 and j + 1 < len(FrontLanding):
 		j = j + 1
-	elif math.ceil(timesavelistBack[i]/1000) >= FrontLanding[j] - 200 and math.ceil(timesavelistBack[i]/1000) <= FrontLanding[j] + 200 and YsavelistBack[i] > 10:
-		BackLanding[j] = math.ceil(timesavelistBack[i]/1000)
+	elif math.ceil(timesavelistBack[i]) >= FrontLanding[j] - 200 and math.ceil(timesavelistBack[i]) <= FrontLanding[j] + 200 and YsavelistBack[i] > 10:
+		BackLanding[j] = math.ceil(timesavelistBack[i])
 		BackLandingI[j] = i
 		
 
@@ -358,17 +355,18 @@ while True:
 				pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(320 - ((FrontLanding[i] - FrontLanding[i-1])/3.0)), 2, 2))
 			if i < len(BackLanding):
 				pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(320 - (FrontLanding[i] - BackLanding[i])/3.0), 2, 2))
-#			pygame.draw.rect(DISPLAYSURF, Cyan, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-XsavelistFront[i]+16)*20), 2, 2))
-#			pygame.draw.rect(DISPLAYSURF, Magenta, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-YsavelistFront[i]+16)*20), 2, 2))
-#			pygame.draw.rect(DISPLAYSURF, Yellow, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-ZsavelistFront[i]+16)*20), 2, 2))
 
-#			pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-XsavelistBack[i]+16)*20), 2, 2))
-#			pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-YsavelistBack[i]+16)*20), 2, 2))
-#			pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(i*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-ZsavelistBack[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Cyan, (math.ceil(timesavelistFront[i]*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-XsavelistFront[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Magenta, (math.ceil(timesavelistFront[i]*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-YsavelistFront[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Yellow, (math.ceil(timesavelistFront[i]*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-ZsavelistFront[i]+16)*20), 2, 2))
+
+#			pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(timesavelistBack[i]*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-XsavelistBack[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(timesavelistBack[i]*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-YsavelistBack[i]+16)*20), 2, 2))
+#			pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(timesavelistBack[i]*msPerPixel*zoomLevel) + startDrawPos, math.ceil((-ZsavelistBack[i]+16)*20), 2, 2))
 	
-#			pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((-MatrixListFront[i].mXX)*320 + 320), 3, 3))
-#			pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((MatrixListFront[i].mYX)*320 + 320), 3, 3))
-#			pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(i/msPerPixel*zoomLevel) + startDrawPos, math.ceil((MatrixListFront[i].mZX)*320 + 320), 3, 3))
+#			pygame.draw.rect(DISPLAYSURF, Red, (math.ceil(timesavelistFront[i]/msPerPixel*zoomLevel) + startDrawPos, math.ceil((-MatrixListFront[i].mXX)*320 + 320), 3, 3))
+#			pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(timesavelistFront[i]/msPerPixel*zoomLevel) + startDrawPos, math.ceil((MatrixListFront[i].mYX)*320 + 320), 3, 3))
+#			pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(timesavelistFront[i]/msPerPixel*zoomLevel) + startDrawPos, math.ceil((MatrixListFront[i].mZX)*320 + 320), 3, 3))
 			reDraw = 0
 #			if isFirstLoop:
 #				print (BackLanding[i], FrontLanding[i], BackLanding[i] - FrontLanding[i], math.ceil(320 - (BackLanding[i] - FrontLanding[i])/3.0))
