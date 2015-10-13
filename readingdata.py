@@ -154,8 +154,8 @@ for i in range (0,lengthOfGraph): # reading data
 			gYsavelistFront.append(gy/16*2*math.pi/1000)
 			gZsavelistFront.append(gz/16*2*math.pi/1000)
 			timesavelistFront.append(math.ceil(t/1000))
-			if ay > 7 and (len(FrontLanding) == 0 or t > FrontLanding[-1]+400): #check landing
-				FrontLanding.append(math.ceil(t))
+			if ay > 7.5 and (len(FrontLanding) == 0 or t/1000 > FrontLanding[-1]+400): #check landing
+				FrontLanding.append(math.ceil(t/1000))
 				FrontLandingI.append(i)
 				lookForBack = True
 				lookForFront = False
@@ -211,10 +211,8 @@ for i in range (0, len(YsavelistBack)):
 	elif math.ceil(timesavelistBack[i]) >= FrontLanding[j] - 200 and math.ceil(timesavelistBack[i]) <= FrontLanding[j] + 200 and YsavelistBack[i] > 10:
 		BackLanding[j] = math.ceil(timesavelistBack[i])
 		BackLandingI[j] = i
-		
 
-		
-		
+	
 MainMatrixFront = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
 MainMatrixBack = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
 AddedXMatrix = Matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
@@ -347,6 +345,8 @@ while True:
 	reDraw = 0
 	pygame.draw.line(DISPLAYSURF, White, (1, WindowSizeY/2), (WindowSizeX, WindowSizeY/2), 2)
 
+	
+	"""
 	for i in range(0,(len(XsavelistBack))):
 		reDraw = reDraw + pixelPerMS*zoomLevel
 #		print (timesavelistBack[i], pixelPerMS, 1.0/45)
@@ -365,8 +365,8 @@ while True:
 			reDraw = 0
 #			if isFirstLoop:
 #				print (BackLanding[i], FrontLanding[i], BackLanding[i] - FrontLanding[i], math.ceil(320 - (BackLanding[i] - FrontLanding[i])/3.0))
+	"""			
 
-	"""
 	for i in range(0,(len(FrontLanding))):
 		reDraw = reDraw + pixelPerPixel*zoomLevel
 		if math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos > 0 and math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos < WindowSizeX and reDraw >= 1:
@@ -379,7 +379,6 @@ while True:
 					pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(320 - (FrontLanding[i] - BackLanding[i])/3.0), 2, 2))
 				else:
 					pygame.draw.rect(DISPLAYSURF, Yellow, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(320 - (FrontLanding[i] - BackLanding[i])/3.0), 2, 2))
-	"""			
 
 	isFirstLoop = False
 	pygame.display.update()	
