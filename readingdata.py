@@ -376,9 +376,9 @@ while True:
 				if FrontLanding[i] - BackLanding[i] > 0:
 					pygame.draw.rect(DISPLAYSURF, Green, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(320 - (FrontLanding[i] - BackLanding[i])/3.0), 2, 2))
 				elif FrontLanding[i] - BackLanding[i] < 0:
-					pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(320 - (FrontLanding[i] - BackLanding[i])/3.0), 2, 2))
-				else:
 					pygame.draw.rect(DISPLAYSURF, Yellow, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(320 - (FrontLanding[i] - BackLanding[i])/3.0), 2, 2))
+				else:
+					pygame.draw.rect(DISPLAYSURF, Blue, (math.ceil(i*pixelPerPixel*zoomLevel) + startDrawPos, math.ceil(320 - (FrontLanding[i] - BackLanding[i])/3.0), 2, 2))
 
 	isFirstLoop = False
 	pygame.display.update()	
