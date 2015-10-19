@@ -60,8 +60,8 @@ startDrawPos = 0
 groundContactTime = 16 # expected ground time in milliseconds, used to calibrate gyroscope
 groundAccellerationMargin = 0.30 #margin for calibrating
 
-SensorFront = open('data_20151014214305_169.bin', 'rb')
-SensorBack =  open('data_20151014214305_168.bin', 'rb')
+SensorFront = open('data_20151014213822_169.bin', 'rb')
+SensorBack =  open('data_20151014213822_168.bin', 'rb')
 drawType = 0
 
 class Vector(object):
